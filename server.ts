@@ -30,10 +30,20 @@ async function startServer() {
   });
 
   // Strict same-origin / allowlisted CORS (never wildcard * on authenticated routes)
+  const allowedOrigins = new Set(
+    String(process.env.CORS_ORIGINS || process.env.APP_URL || '')
+      .split(',')
+      .map((s) => s.trim().replace(/\/$/, ''))
+      .filter(Boolean)
+  );
   app.use((req, res, next) => {
     const origin = req.headers.origin;
-    const appUrl = process.env.APP_URL;
-    if (origin && (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:') || (appUrl && origin === appUrl))) {
+    if (
+      origin &&
+      (origin.startsWith('http://localhost:') ||
+        origin.startsWith('http://127.0.0.1:') ||
+        allowedOrigins.has(origin.replace(/\/$/, '')))
+    ) {
       res.setHeader('Access-Control-Allow-Origin', origin);
       res.setHeader('Vary', 'Origin');
       res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type');
