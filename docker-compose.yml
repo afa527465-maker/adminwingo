@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: wingo-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${SQL_USER:-wingo}
+      POSTGRES_PASSWORD: ${SQL_PASSWORD:-change_me_local_pg_password}
+      POSTGRES_DB: ${SQL_DB_NAME:-wingo}
+    ports:
+      - "5432:5432"
+    volumes:
+      - wingo_pgdata:/var/lib/postgresql/data
+
+volumes:
+  wingo_pgdata:
